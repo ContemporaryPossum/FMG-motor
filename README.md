@@ -1,78 +1,62 @@
-# MasterPiece Tailor website
+# FMG Falix Motor Garage — website
 
-A static, single-page site for MasterPiece Tailor (Kelana Jaya and Cyberjaya). Plain HTML, CSS and JavaScript with no build step. Every file sits at the top level, so you can drag them straight into a GitHub repository and deploy on Cloudflare Pages.
+A static, no-build site for FMG Falix Motor Garage (346 & 347, Jalan Bandar Baru 4, Taman Bandar Baru, 08000 Sungai Petani, Kedah).
+
+Every file sits in the root folder. There is no build step, so it deploys as-is.
 
 ## Files
 
 | File | What it does |
 | --- | --- |
-| `index.html` | The whole site: hero, client marquee, heritage timeline, the five-step craft drawing, collection, review charts, testimonials, offers, FAQ, ateliers and the WhatsApp enquiry form |
-| `styles.css` | Design tokens (navy and gold), layout, responsive rules, reduced-motion fallbacks |
-| `main.js` | Lenis smooth scroll, GSAP ScrollTrigger scenes, SplitText reveals, menu, FAQ, form, opening hours, offer countdown |
-| `threads.js` | The scroll-scrubbed vector background (gold "threads" that morph per section and react to the cursor) |
-| `charts.js` | Bklit-style animated charts (ring, bar, gauge, rolling numbers) |
-| `privacy.html` | Privacy page |
-| `404.html` | Not-found page (Cloudflare Pages serves it automatically) |
-| `favicon.svg`, `site.webmanifest` | Icon and app manifest |
-| `robots.txt`, `sitemap.xml` | Search engine files |
-| `_headers` | Cloudflare Pages security headers |
+| `index.html` | The page: hero, services, dyno lab, builds, reviews, process, visit, footer |
+| `styles.css` | All styling. Colours, fonts and spacing are tokens at the top of the file |
+| `data.js` | **Business info you'll edit**: phone, hours, links, stats, reviews, dyno and build-stage data |
+| `main.js` | Lenis smooth scroll, GSAP scroll animations, preloader, gear/RPM HUD, cursor, menu |
+| `background.js` | The animated vector background (rotor, airflow lines, dyno ridges, speed streaks, location ping) |
+| `charts.js` | Interactive charts in the style of Bklit UI: dyno curve, radar, rings, hours heatmap |
+| `favicon.svg`, `site.webmanifest` | Browser icon and install metadata |
+| `_headers` | Cloudflare Pages security and cache headers |
+| `404.html`, `robots.txt` | Not-found page and crawler rules |
+
+Libraries load from jsDelivr, pinned to exact versions: GSAP 3.13.0 (with ScrollTrigger and SplitText) and Lenis 1.3.26. Fonts load from Google Fonts: Archivo and Geist Mono.
 
 ## Deploy
 
-1. **GitHub:** create a new repository, click **Add file > Upload files**, drag in every file from this folder, and commit.
-2. **Cloudflare:** go to **Workers & Pages > Create > Pages > Connect to Git** and pick the repository.
+1. Create a new GitHub repository and upload all the files to its root. Drag them in on github.com: **Add file → Upload files**.
+2. In Cloudflare, go to **Workers & Pages → Create → Pages → Connect to Git** and pick the repository.
+3. Build settings:
    - Framework preset: **None**
-   - Build command: *leave empty*
+   - Build command: *(leave empty)*
    - Build output directory: `/`
-3. Deploy. Every later push to GitHub redeploys automatically.
-4. **Custom domain:** in the Pages project, open **Custom domains** and add `www.masterpiecetailor.my` (and the bare domain if you want it). Follow Cloudflare's DNS prompts.
+4. Deploy. Each later push to GitHub redeploys automatically.
+5. Optional: add the client's domain under **Custom domains**.
 
-To preview locally, open `index.html` in a browser. It needs an internet connection for fonts, libraries and photos.
+## Editing content
 
-## Before going live: confirm with the client
+Almost everything a client asks to change lives in `data.js`:
 
-- **Heritage claims.** The 1920s Penang origin and the commissions for Tunku Abdul Rahman, the Sultan of Kedah, the Raja Muda of Perlis and the Empress of Iran come from the client's current website. Confirm they're happy to show them.
-- **"Top 10 in Malaysia" (2025).** Their site says "ranked #1". The publisher's article lists them without a numbered position, so this site says "named among the Top 10".
-- **Kelana Jaya opening year.** Not published anywhere, so the timeline shows it as "Today". Add the year if they have it.
-- **Review numbers** (Proof section, set in `main.js` under `initProof`): Google Maps on 14 October 2026 showed Cyberjaya at 4.9 from 100 reviews (96 five-star, 2 four-star, 1 two-star, 1 one-star) and Kelana Jaya at 5.0 from 21. Facebook showed 100% recommend from 11 reviews. Update these from time to time.
-- **Corporate client list** (marquee) comes from their corporate flyer. Confirm each organisation is happy to be named.
-- **Testimonials** are lightly trimmed from the client's own testimonial cards.
-- **Privacy page** is a plain-language starting point, not legal advice.
+- **Phone / WhatsApp:** `phoneDisplay`, `phoneTel`, `whatsapp`, `whatsappMessage`
+- **Opening hours:** `hours`. Days are 0 = Sunday … 6 = Saturday, times are minutes from midnight. The "Open now" status and the heatmap update from this automatically, in Malaysia time.
+- **Social and Shopee links:** `links`
+- **Follower counts and Google rating:** `stats` and `reach`
+- **Reviews:** `reviews`
+- **Bikes in "On the bench":** `bench`
+- **Dyno curves:** `dyno.models`
+- **Build stages:** `stages`
 
-## Photos: move them off the old host
+## Confirm with the client before launch
 
-The photos currently load from the existing website's image host (`primary.jwwb.nl`). They will stop working if the old Jouwweb site is cancelled. Before then:
+- **Dyno numbers are samples.** Stock peaks follow published manufacturer figures; the tuned curves are indicative. Swap in real dyno sheets in `data.js` (the page labels them as sample curves until then).
+- **Build-stage radar values** are indicative targets. Confirm the parts listed for each stage, and whether they want stages shown at all.
+- **"On the bench" models:** Y16ZR, RSX150, Y15ZR and NVX come from their own posts. RS150R is an assumption.
+- **Brands in the ticker:** Redleo, UMA Racing (they're in UMA's dealer list), ESR, Motul and FRP Performance. Confirm they're happy to show these.
+- **Stats** (4.6★ from 41 Google reviews, 16.5K TikTok followers, 154.7K likes, 2,454 Instagram followers, 1,857 Facebook likes) were checked in October 2026.
+- **Logo:** the site uses a typographic "FMG" wordmark. If they send their logo file, it can replace the `.brand-mark` text in `index.html`.
+- **Photos:** none are used, because the design is all vector. Workshop photos can be added if wanted.
+- **Social preview image:** add an `og-image.png` (1200×630) and an `og:image` meta tag for nicer link previews on WhatsApp and Facebook.
 
-1. Download each image below and add it to the repository root with the suggested name.
-2. Replace the matching long URL in `index.html` with the file name (for example `src="hero-suit.jpg"`).
+## Accessibility and motion
 
-| Used for | Suggested name | Current file on the old host |
-| --- | --- | --- |
-| Hero | `hero-suit.jpg` | `3801889901.jpg` |
-| Suits card | `suits.jpg` | `photo_2024-02-18152011.jpg` |
-| Shirts card | `shirts.jpg` | `pl59ap/photo_2024-01-28224443.jpg` |
-| Trousers card | `trousers.png` | `6j4o27/19102961171-1.png` |
-| Weddings card | `wedding.jpg` | `wedding-636021_640.jpg` (only 464 px wide, a larger photo would look better) |
-| Corporate card | `corporate.png` | `masterpiece-corporate-wear-high.png` (a poster cropped by CSS, a real team photo would be better) |
-
-Better still, swap in the client's own atelier and fitting photography wherever possible.
-
-## Everyday edits
-
-- **Offers and their end date:** `index.html`, the `data-ends` attribute on the offers section and the `data-expires` attributes on the two promo prices. After the end date the section switches to a "Chat on WhatsApp" prompt and the promo prices hide themselves.
-- **Opening hours:** `main.js`, the `HOURS` object (used for the live "Open now" status) plus the hours lists in `index.html`.
-- **WhatsApp numbers:** `main.js`, the `WA` object (used by the enquiry form), plus links in `index.html`.
-- **Booking link:** every "Book a fitting" button points to `https://book.masterpiecetailor.my`.
-
-## Technical notes
-
-- Libraries load from jsDelivr at pinned versions: GSAP 3.13.0 (with ScrollTrigger and SplitText), Lenis 1.3.26 and Phosphor Icons 2.1.1. Fonts come from Google Fonts (Bodoni Moda, Manrope, JetBrains Mono).
-- **About Bklit:** Bklit UI is a React + Visx component registry that installs through the shadcn CLI and needs a Node build step. That doesn't fit a flat, no-build static site, so `charts.js` recreates Bklit's look and behaviour in plain SVG:
-  - grid, series, axes and tooltip layers
-  - `--chart-*` CSS tokens
-  - roughly 1.1 second staggered enter animations
-  - faded siblings and crosshair tooltips on hover
-  - ring charts with a live centre value
-  - rolling-digit numbers
-- **Accessibility:** visitors with "reduce motion" switched on get native scrolling, no pinned or scrubbed scenes and a still background. Every chart includes a screen-reader data table.
-- If the CDN libraries fail to load, the page still shows all content as a normal static page.
+- Visitors with "reduce motion" turned on get native scrolling, a static background and every section in its final state.
+- Charts have text labels for screen readers. The dyno chart is keyboard-operable with the arrow keys.
+- The custom cursor and magnetic buttons only switch on for mouse users.

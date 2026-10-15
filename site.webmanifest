@@ -1,11 +1,11 @@
 {
-  "name": "MasterPiece Tailor",
-  "short_name": "MasterPiece",
-  "description": "Bespoke suits, shirts and wedding wear in Kelana Jaya and Cyberjaya.",
+  "name": "FMG Falix Motor Garage",
+  "short_name": "FMG",
+  "description": "ECU & CDI mapping, dyno tuning and engine builds in Sungai Petani, Kedah.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0a1322",
-  "theme_color": "#0a1322",
+  "background_color": "#110d0b",
+  "theme_color": "#110d0b",
   "icons": [
     { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
   ]

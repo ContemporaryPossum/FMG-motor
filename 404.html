@@ -3,31 +3,26 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Page not found | MasterPiece Tailor</title>
+  <title>Wrong turn · FMG Falix Motor Garage</title>
   <meta name="robots" content="noindex">
-  <meta name="theme-color" content="#0a1322">
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#110d0b">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..700&amp;family=Manrope:wght@400;500;600;700&amp;display=swap">
-  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Geist+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="styles.css">
   <style>
-    .lost { min-height: 100vh; min-height: 100svh; display: grid; place-content: center; justify-items: start; gap: 24px; padding: 96px var(--gutter); max-width: 900px; margin: 0 auto; }
-    .lost svg { width: 72px; height: 50px; color: var(--gold); }
-    .lost .h2 em { white-space: nowrap; }
+    .lost { min-height: 100svh; display: grid; align-content: center; gap: 28px; padding: 40px var(--pad); max-width: var(--maxw); margin: 0 auto; }
+    .lost .code { font-stretch: 125%; font-weight: 900; font-style: italic; font-size: clamp(7rem, 30vw, 22rem); line-height: 0.8; letter-spacing: -0.05em; }
+    .lost .code span { color: var(--accent); }
   </style>
 </head>
 <body>
-  <div class="vignette" aria-hidden="true"></div>
   <main class="lost">
-    <svg viewBox="0 0 64 44" aria-hidden="true">
-      <path d="M3 4 20.5 40 32 15 43.5 40 61 4" fill="none" stroke="currentColor" stroke-width="2.6"/>
-      <path d="M11.5 9.5 20.5 29 26.2 16.8M52.5 9.5 43.5 29 37.8 16.8" fill="none" stroke="currentColor" stroke-width="1.6"/>
-      <path d="M32 23.5 36.8 34 32 34Z" fill="currentColor"/>
-    </svg>
-    <h1 class="h2">This page doesn't <em>fit.</em></h1>
-    <p class="lede">The link may be old, or the page has moved. Everything you need is on the home page.</p>
-    <a class="btn btn--gold btn--lg" href="/">Back to MasterPiece</a>
+    <p class="code" aria-hidden="true">4<span>0</span>4</p>
+    <h1 class="h-display" style="font-size:clamp(2rem,5vw,4rem)">Wrong turn.</h1>
+    <p class="lede">This page isn't on the map. Head back to the garage.</p>
+    <p><a class="btn btn-primary" href="/">Back to FMG</a></p>
   </main>
 </body>
 </html>
