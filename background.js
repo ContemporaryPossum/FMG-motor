@@ -50,6 +50,7 @@
     flow:    { w: { flow: 0.75, ridge: 0, streak: 0.25, contour: 0 }, rotor: { x: 0.88, y: 0.78, r: 0.24, a: 0.6 }, rotorP: { x: 0.9, y: 0.86, r: 0.34, a: 0.5 } },
     streak:  { w: { flow: 0, ridge: 0, streak: 1, contour: 0 },     rotor: { x: 1.04, y: 0.9, r: 0.2, a: 0.35 },  rotorP: { x: 1.02, y: 0.94, r: 0.3, a: 0.3 } },
     ridge:   { w: { flow: 0, ridge: 1, streak: 0, contour: 0 },     rotor: { x: 0.5, y: 1.35, r: 0.3, a: 0 } },
+    shop:    { w: { flow: 0.85, ridge: 0, streak: 0.15, contour: 0 }, rotor: { x: 0.06, y: 0.5, r: 0.3, a: 0.7 }, rotorP: { x: 0.08, y: 0.9, r: 0.4, a: 0.5 } },
     contour: { w: { flow: 0, ridge: 0, streak: 0, contour: 1 },     rotor: { x: 0.74, y: 0.4, r: 0.12, a: 0 },    cp: { x: 0.74, y: 0.42 }, cpP: { x: 0.5, y: 0.6 } },
     footer:  { w: { flow: 1, ridge: 0, streak: 0, contour: 0 },     rotor: { x: 0.5, y: 0.5, r: 0.42, a: 0.85 },  rotorP: { x: 0.5, y: 0.45, r: 0.62, a: 0.85 } },
   };

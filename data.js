@@ -120,6 +120,75 @@ window.FMG = {
     },
   },
 
+  /* ------------------------------------------------------------------------
+     Shop & dyno booking — PAYMENT LINKS
+     How it works:
+       1. In your payment gateway (Stripe Payment Links, ToyyibPay, Billplz,
+          CHIP Collect, …) create one payment link per item / option.
+       2. Paste each link into `payLink` below. Leave it "" and that button
+          falls back to "Order on WhatsApp", so the shop works before the
+          gateway is approved.
+       3. In the gateway, set the success / redirect URL to
+          https://YOUR-DOMAIN/#paid — customers come back to a prompt that
+          sends their order or booking details on WhatsApp.
+     Prices here are only what the page DISPLAYS. The gateway charges the
+     price set on the payment link, so keep the two the same.
+     ------------------------------------------------------------------------ */
+  shop: {
+    pricesConfirmed: false, // set to true once FMG has confirmed every price below (hides the "sample" labels)
+    refParam: "",           // Stripe Payment Links: "client_reference_id" (adds the booking ref to the payment). Others: ""
+
+    deposit: {
+      price: 50,            // PLACEHOLDER — confirm the deposit amount with FMG
+      payLink: "",
+      note: "Deducted from your final bill",
+      days: 14,             // how many days ahead customers can pick
+      slots: [
+        { key: "am", label: "Morning", time: "9:30 am – 12:30 pm" },
+        { key: "pm", label: "Afternoon", time: "2:00 – 7:00 pm" },
+      ],
+    },
+
+    /* stock: "ready" or "preorder". image: optional photo file in the root
+       folder (e.g. "redleo-ecu.jpg"); without one a vector drawing is used. */
+    products: [
+      {
+        id: "redleo-ecu", name: "Redleo plug & play ECU", tag: "ECU", art: "ecu", image: "",
+        price: 550, stock: "ready", payLink: "",  // PLACEHOLDER price
+        blurb: "Multi-map ECU. Fit it yourself, or have the crew fit and map it on the dyno.",
+        options: [
+          { label: "Y15ZR", payLink: "" },
+          { label: "Y16ZR", payLink: "" },
+          { label: "RS150R", payLink: "" },
+          { label: "RSX150", payLink: "" },
+        ],
+      },
+      {
+        id: "motul-7100", name: "Motul 7100 4T 10W-50, 1 L", tag: "Oil", art: "oil", image: "",
+        price: 52, stock: "ready", payLink: "",   // PLACEHOLDER price
+        blurb: "Fully synthetic 4-stroke oil for high-revving, tuned engines.",
+      },
+      {
+        id: "radiator", name: "Racing radiator", tag: "Cooling", art: "radiator", image: "",
+        price: 220, stock: "ready", payLink: "",  // PLACEHOLDER price
+        blurb: "Larger core to keep temperatures in check once the engine is tuned.",
+        options: [
+          { label: "Y15ZR", payLink: "" },
+          { label: "NVX", payLink: "" },
+        ],
+      },
+      {
+        id: "esr-rims", name: "ESR sport rim set", tag: "Wheels", art: "rim", image: "",
+        price: 480, stock: "preorder", payLink: "", // PLACEHOLDER price
+        blurb: "Lightweight front and rear sport rims.",
+        options: [
+          { label: "Y15ZR", payLink: "" },
+          { label: "RS150R", payLink: "" },
+        ],
+      },
+    ],
+  },
+
   /* "On the bench" list. Each row opens WhatsApp with the model pre-filled. */
   bench: [
     { model: "Y16ZR", make: "Yamaha", note: "ECU dyno tuning" },

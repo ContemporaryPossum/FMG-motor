@@ -127,6 +127,234 @@
   });
 
   /* ------------------------------------------------------------------------
+     1b. Shop & dyno booking — payment links (config in data.js → shop)
+     ------------------------------------------------------------------------ */
+  var SHOP = D.shop || null;
+  var WD = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  var MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  function money(n) { return "RM " + Number(n).toLocaleString("en-MY", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 }); }
+  function newRef() { return "FMG-" + (Date.now().toString(36).slice(-3) + Math.random().toString(36).slice(2, 4)).toUpperCase(); }
+  function withRef(link, ref) {
+    if (!link || !SHOP || !SHOP.refParam || !ref) return link;
+    return link + (link.indexOf("?") > -1 ? "&" : "?") + encodeURIComponent(SHOP.refParam) + "=" + encodeURIComponent(ref);
+  }
+  function remember(o) { try { localStorage.setItem("fmg:last", JSON.stringify(o)); } catch (e) {} }
+  function recall() { try { return JSON.parse(localStorage.getItem("fmg:last") || "null"); } catch (e) { return null; } }
+  function klToday() {
+    try {
+      var p = {};
+      new Intl.DateTimeFormat("en-CA", { timeZone: D.timezone || "Asia/Kuala_Lumpur", year: "numeric", month: "2-digit", day: "2-digit" })
+        .formatToParts(new Date()).forEach(function (x) { p[x.type] = x.value; });
+      return [+p.year, +p.month, +p.day];
+    } catch (e) { var d = new Date(); return [d.getFullYear(), d.getMonth() + 1, d.getDate()]; }
+  }
+  function fmtISO(iso, long) {
+    var d = new Date(iso + "T00:00:00Z");
+    return (long ? DAY_LONG[d.getUTCDay()] : WD[d.getUTCDay()]) + " " + d.getUTCDate() + " " + MON[d.getUTCMonth()] + (long ? " " + d.getUTCFullYear() : "");
+  }
+
+  /* Vector product drawings (used when a product has no photo) */
+  var ART = (function () {
+    var o = '<svg viewBox="0 0 160 120" aria-hidden="true">', c = "</svg>";
+    function d(attrs, cls) { return '<path class="draw' + (cls ? " " + cls : "") + '" pathLength="1" d="' + attrs + '"/>'; }
+    var spokes = "";
+    for (var k = 0; k < 5; k++) {
+      [-7, 7].forEach(function (off) {
+        var a1 = (k * 72 + off * 0.6) * Math.PI / 180, a2 = (k * 72 + off) * Math.PI / 180;
+        spokes += "M" + (80 + Math.cos(a1) * 10).toFixed(1) + " " + (60 + Math.sin(a1) * 10).toFixed(1) +
+          "L" + (80 + Math.cos(a2) * 37).toFixed(1) + " " + (60 + Math.sin(a2) * 37).toFixed(1);
+      });
+    }
+    var fins = "";
+    for (var x = 40; x <= 120; x += 8) fins += "M" + x + " 34V90";
+    return {
+      ecu: o + '<rect class="draw" pathLength="1" x="36" y="30" width="88" height="60" rx="8"/>' +
+        d("M36 44H22M36 52H22M36 60H22M36 68H22M36 76H22") +
+        '<rect class="draw" pathLength="1" x="50" y="44" width="42" height="26" rx="3"/>' + d("M57 53H85M57 61H77") +
+        '<circle class="draw accent" pathLength="1" cx="108" cy="46" r="4"/><circle class="draw" pathLength="1" cx="108" cy="72" r="7"/>' +
+        d("M108 67V72") + d("M124 42H138V78H124") + c,
+      oil: o + d("M66 30H90V40L108 50V100A6 6 0 0 1 102 106H58A6 6 0 0 1 52 100V52L66 42Z") +
+        '<rect class="draw" pathLength="1" x="68" y="16" width="20" height="14" rx="2"/>' +
+        d("M108 58H116A6 6 0 0 1 122 64V78A6 6 0 0 1 116 84H108") +
+        d("M52 76C60 71 68 81 76 76S92 71 108 76", "accent") + d("M62 90H96") + c,
+      radiator: o + '<rect class="draw" pathLength="1" x="32" y="30" width="96" height="64" rx="4"/>' + d(fins) +
+        d("M32 40H24A6 6 0 0 0 18 46V58") + d("M128 84H136A6 6 0 0 1 142 90V102") +
+        '<circle class="draw accent" pathLength="1" cx="116" cy="20" r="6"/>' + d("M116 26V30") + c,
+      rim: o + '<g class="rim-spin"><circle class="draw" pathLength="1" cx="80" cy="60" r="46"/>' +
+        '<circle class="draw" pathLength="1" cx="80" cy="60" r="38"/><circle class="draw" pathLength="1" cx="80" cy="60" r="10"/>' +
+        d(spokes) + '<circle class="draw accent" pathLength="1" cx="' + (80 + Math.cos(0.63) * 42).toFixed(1) + '" cy="' + (60 + Math.sin(0.63) * 42).toFixed(1) + '" r="2.5"/></g>' + c,
+    };
+  })();
+
+  safe("shop-note", function () {
+    var note = $("[data-shop-note]");
+    if (!note || !SHOP) return;
+    var anyLink = !!SHOP.deposit.payLink || SHOP.products.some(function (p) {
+      return p.payLink || (p.options || []).some(function (o) { return o.payLink; });
+    });
+    var bits = [];
+    if (!anyLink) bits.push("Online payment is coming soon. Until then, buttons send your order or booking on WhatsApp.");
+    if (!SHOP.pricesConfirmed) bits.push("Prices shown are samples; the crew confirms the final price.");
+    if (bits.length) { note.textContent = bits.join(" "); note.hidden = false; }
+  });
+
+  safe("products", function () {
+    var box = $("[data-products]");
+    if (!box || !SHOP) return;
+    SHOP.products.forEach(function (p) {
+      var opts = p.options && p.options.length ? p.options : null;
+      var el = document.createElement("article");
+      el.className = "prod card";
+      var pre = p.stock === "preorder";
+      var html =
+        '<div class="prod-art">' + (p.image ? '<img src="' + esc(p.image) + '" alt="' + esc(p.name) + '" loading="lazy">' : (ART[p.art] || "")) + "</div>" +
+        '<div class="prod-top"><span class="mono prod-tag">' + esc(p.tag) + '</span><span class="stock' + (pre ? " is-pre" : "") + '"><i></i>' + (pre ? "Pre-order" : "Ready stock") + "</span></div>" +
+        '<h3 class="prod-name">' + esc(p.name) + "</h3>" +
+        '<p class="prod-blurb">' + esc(p.blurb) + "</p>";
+      if (opts) {
+        html += '<fieldset class="opts"><legend class="mono">Fits</legend><div class="pick sm">' +
+          opts.map(function (o, i) {
+            return '<label class="chip-radio"><input type="radio" name="opt-' + esc(p.id) + '" value="' + i + '"' + (i === 0 ? " checked" : "") + "><span>" + esc(o.label) + "</span></label>";
+          }).join("") + "</div></fieldset>";
+      } else html += "<div></div>";
+      html += '<div class="prod-foot"><span class="price">' + money(p.price) + (SHOP.pricesConfirmed ? "" : "<small>Sample</small>") + "</span>" +
+        '<a class="btn btn-primary" data-buy target="_blank" rel="noopener"></a>' +
+        '<a class="prod-ask" data-ask target="_blank" rel="noopener">Ask about fitting <svg class="icon"><use href="#i-arrow"/></svg></a></div>';
+      el.innerHTML = html;
+      box.appendChild(el);
+
+      var buy = $("[data-buy]", el), ask = $("[data-ask]", el), label = p.name, link = "";
+      function update() {
+        var c = opts ? $("input:checked", el) : null, o = opts ? opts[c ? +c.value : 0] : null;
+        label = p.name + (o ? " (" + o.label + ")" : "");
+        link = (o && o.payLink) || p.payLink || "";
+        if (link) {
+          buy.innerHTML = '<svg class="icon"><use href="#i-lock"/></svg> ' + (pre ? "Pre-order now" : "Buy now");
+          buy.href = link;
+        } else {
+          buy.innerHTML = '<svg class="icon"><use href="#i-chat"/></svg> ' + (pre ? "Pre-order on WhatsApp" : "Order on WhatsApp");
+          buy.href = waLink("Hi FMG, I'd like to " + (pre ? "pre-order" : "order") + ": " + label + " (" + money(p.price) + "). Is it available?");
+        }
+        buy.setAttribute("aria-label", buy.textContent.trim() + ": " + label);
+        ask.href = waLink("Hi FMG, a question about the " + label + ": ");
+      }
+      el.addEventListener("change", update);
+      buy.addEventListener("click", function () {
+        if (!link) return;
+        var ref = newRef();
+        buy.href = withRef(link, ref);
+        remember({ kind: "order", ref: ref, text: "Hi FMG, I've just paid online for: " + label + " (ref " + ref + "). I'd like to collect it / have it delivered to: " });
+      });
+      update();
+    });
+  });
+
+  safe("booking", function () {
+    var form = $("[data-book-form]");
+    if (!form || !SHOP || !SHOP.deposit) return;
+    var dep = SHOP.deposit, ref = newRef();
+    var pay = $("[data-book-pay]"), wa = $("[data-book-wa]"), sum = $("[data-book-summary]"), sumBox = sum.parentNode;
+    var steps = $$("[data-book-steps] li");
+    $("[data-deposit-amount]").textContent = money(dep.price);
+    $("[data-deposit-note]").textContent = dep.note;
+    $("[data-book-ref]").textContent = "Ref " + ref;
+
+    var bikes = (D.bench || []).map(function (b) { return b.model; }).concat(["Other"]);
+    $('[data-pick="bike"]').innerHTML = bikes.map(function (b) {
+      return '<label class="chip-radio"><input type="radio" name="bike" value="' + esc(b) + '"><span>' + esc(b) + "</span></label>";
+    }).join("");
+    $('[data-pick="slot"]').innerHTML = dep.slots.map(function (s, i) {
+      return '<label class="chip-radio"><input type="radio" name="slot" value="' + esc(s.key) + '"' + (i === 0 ? " checked" : "") + "><span>" + esc(s.label) + " <small>" + esc(s.time) + "</small></span></label>";
+    }).join("");
+
+    var t = klToday(), first = true, cells = "";
+    for (var i = 1; i <= (dep.days || 14); i++) {
+      var dt = new Date(Date.UTC(t[0], t[1] - 1, t[2] + i)), wd = dt.getUTCDay(), open = !!D.hours[wd];
+      var iso = dt.toISOString().slice(0, 10);
+      cells += '<label class="day-cell"><input type="radio" name="day" value="' + iso + '"' + (open ? "" : " disabled") + (open && first ? " checked" : "") +
+        ' aria-label="' + fmtISO(iso, true) + (open ? "" : ", closed") + '"><span><small>' + WD[wd] + "</small><b>" + dt.getUTCDate() + "</b><small>" + (open ? MON[dt.getUTCMonth()] : "Shut") + "</small></span></label>";
+      if (open) first = false;
+    }
+    $('[data-pick="day"]').innerHTML = cells;
+
+    if (!dep.payLink) {
+      pay.hidden = true;
+      wa.classList.replace("btn-ghost", "btn-primary");
+      $("span", wa).textContent = "Request this slot on WhatsApp";
+      steps[1].lastChild.textContent = "Send the request on WhatsApp";
+      steps[2].lastChild.textContent = "Pay the deposit once the crew confirms";
+    } else {
+      $("span", pay).textContent = "Pay " + money(dep.price) + " deposit";
+    }
+
+    var paid = false, msg = "";
+    function read() {
+      var f = new FormData(form), slotKey = f.get("slot"), slot = null;
+      dep.slots.forEach(function (s) { if (s.key === slotKey) slot = s; });
+      return { bike: f.get("bike"), day: f.get("day"), slot: slot, mods: String(f.get("mods") || "").trim() };
+    }
+    function update() {
+      var s = read(), ok = !!(s.bike && s.day && s.slot);
+      sumBox.classList.remove("is-error");
+      sum.textContent = ok ? s.bike + " · " + fmtISO(s.day) + " · " + s.slot.label : "Pick your bike to continue";
+      msg = "Hi FMG, I'd like to book a dyno session." +
+        "\nBike: " + (s.bike || "-") +
+        "\nDay: " + (s.day ? fmtISO(s.day, true) : "-") +
+        "\nSlot: " + (s.slot ? s.slot.label + " (" + s.slot.time + ")" : "-") +
+        (s.mods ? "\nCurrent mods: " + s.mods : "") +
+        "\nRef: " + ref +
+        (dep.payLink ? (paid ? "\nDeposit: paid online (" + money(dep.price) + ")" : "") : "\nDeposit: " + money(dep.price) + ", please send payment details");
+      wa.href = waLink(msg);
+      if (dep.payLink) pay.href = withRef(dep.payLink, ref);
+      [pay, wa].forEach(function (a) { a.setAttribute("aria-disabled", String(!ok)); });
+      steps.forEach(function (li, i) {
+        var state = !ok ? (i === 0 ? "now" : "") : dep.payLink ? (paid ? (i < 2 ? "done" : "now") : (i === 0 ? "done" : i === 1 ? "now" : "")) : (i === 0 ? "done" : i === 1 ? "now" : "");
+        li.classList.toggle("is-done", state === "done");
+        li.classList.toggle("is-now", state === "now");
+      });
+      return ok;
+    }
+    form.addEventListener("change", update);
+    form.addEventListener("input", update);
+    form.addEventListener("submit", function (e) { e.preventDefault(); });
+    [pay, wa].forEach(function (a) {
+      a.addEventListener("click", function (e) {
+        if (update()) return;
+        e.preventDefault();
+        sumBox.classList.add("is-error");
+        sum.textContent = "Pick your bike first";
+        var firstBike = $('input[name="bike"]', form);
+        if (firstBike) firstBike.focus();
+      });
+    });
+    pay.addEventListener("click", function () {
+      if (pay.getAttribute("aria-disabled") === "true") return;
+      paid = true;
+      update();
+      remember({ kind: "booking", ref: ref, text: msg });
+      pay.classList.replace("btn-primary", "btn-ghost");
+      wa.classList.replace("btn-ghost", "btn-primary");
+    });
+    update();
+  });
+
+  /* Back from the payment page (gateway success URL → …/#paid) */
+  safe("paid-toast", function () {
+    var toast = $("[data-toast]");
+    if (!toast || location.hash !== "#paid") return;
+    var last = recall();
+    $("[data-toast-body]", toast).textContent = last
+      ? (last.kind === "booking" ? "Send your booking details so the crew can lock in your slot." : "Send your order details so the crew can get it ready.") + " Ref " + last.ref + "."
+      : "Send your receipt on WhatsApp so the crew can match your payment.";
+    $("[data-toast-wa]", toast).href = waLink(last ? last.text : "Hi FMG, I've just paid online. Here's my receipt: ");
+    try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+    function show() { toast.hidden = false; if (window.gsap && !RM) gsap.from(toast, { y: 30, autoAlpha: 0, duration: 0.7, ease: "expo.out" }); }
+    setTimeout(show, $(".preloader") && !RM ? 2800 : 300);
+    $("[data-toast-close]", toast).addEventListener("click", function () { toast.hidden = true; });
+  });
+
+  /* ------------------------------------------------------------------------
      2. Lenis smooth scroll (darkroom.engineering) on GSAP's ticker
      ------------------------------------------------------------------------ */
   var lenis = null;
@@ -577,6 +805,38 @@
     gsap.from(rows, { y: 40, autoAlpha: 0, duration: 0.9, ease: "power3.out", stagger: 0.07, scrollTrigger: { trigger: ".bench-list", start: "top 85%", once: true } });
   });
 
+  /* Shop: cards stagger in, drawings trace on, day picker cascades, tilt on hover */
+  safe("shop-fx", function () {
+    var cards = $$(".prod");
+    if (cards.length) {
+      gsap.from(cards, { y: 70, autoAlpha: 0, duration: 1, ease: "expo.out", stagger: 0.08, scrollTrigger: { trigger: "[data-products]", start: "top 88%", once: true } });
+      cards.forEach(function (c) {
+        var draws = $$(".draw[pathLength]", c);
+        if (draws.length) gsap.fromTo(draws, { strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 1.6, ease: "power2.inOut", stagger: 0.05, scrollTrigger: { trigger: c, start: "top 85%", once: true } });
+      });
+      if (FINE) cards.forEach(function (c) {
+        var rx = gsap.quickTo(c, "rotationX", { duration: 0.6, ease: "power3.out" });
+        var ry = gsap.quickTo(c, "rotationY", { duration: 0.6, ease: "power3.out" });
+        gsap.set(c, { transformPerspective: 900 });
+        c.addEventListener("pointermove", function (e) {
+          var r = c.getBoundingClientRect();
+          ry(((e.clientX - r.left) / r.width - 0.5) * 7);
+          rx(-((e.clientY - r.top) / r.height - 0.5) * 7);
+        });
+        c.addEventListener("pointerleave", function () { rx(0); ry(0); });
+      });
+    }
+    var days = $$(".day-cell");
+    if (days.length) gsap.from(days, { y: 16, autoAlpha: 0, duration: 0.6, ease: "power3.out", stagger: { each: 0.035, grid: [2, 7], from: "start" }, scrollTrigger: { trigger: ".days", start: "top 90%", once: true } });
+    var dep = $("[data-deposit-amount]");
+    if (dep && SHOP) {
+      var o = { v: 0 };
+      ScrollTrigger.create({ trigger: dep, start: "top 88%", once: true, onEnter: function () {
+        gsap.to(o, { v: SHOP.deposit.price, duration: 1.4, ease: "expo.out", onUpdate: function () { dep.textContent = money(Math.round(o.v)); }, onComplete: function () { dep.textContent = money(SHOP.deposit.price); } });
+      } });
+    }
+  });
+
   /* Reviews: score count-up, stars fill, stacking cards */
   safe("reviews-fx", function () {
     var score = $(".proof-score");
@@ -665,7 +925,13 @@
     var cells = $$("[data-tach] i"), out = $("[data-rpm-out]");
     if (!cells.length) return;
     var rpm = 1300, lastLit = -1, lastTxt = "";
+    // On phones the HUD only shows while you're scrolling, so it never sits on a button you want to tap
+    var hudEl = $(".hud"), narrow = window.matchMedia("(max-width: 899px)"), lastMove = 0, idle = false;
     gsap.ticker.add(function () {
+      var now = performance.now();
+      if (Math.abs(vel) > 0.5) lastMove = now;
+      var isIdle = narrow.matches && now - lastMove > 1400;
+      if (hudEl && isIdle !== idle) { idle = isIdle; hudEl.classList.toggle("is-idle", isIdle); }
       var target = 1300 + Math.min(Math.abs(vel) * 280, 12700);
       rpm += (target - rpm) * (target > rpm ? 0.25 : 0.06);
       var lit = Math.round((rpm / 14000) * 14);

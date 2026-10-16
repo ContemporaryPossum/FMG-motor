@@ -75,6 +75,9 @@
     <symbol id="i-bag" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></symbol>
     <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
     <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
   </svg>
 
   <a class="skip" href="#main">Skip to content</a>
@@ -109,6 +112,7 @@
       <a href="#services">Services</a>
       <a href="#dyno">Dyno lab</a>
       <a href="#builds">Builds</a>
+      <a href="#shop">Shop</a>
       <a href="#reviews">Reviews</a>
       <a href="#visit">Visit</a>
     </nav>
@@ -125,6 +129,7 @@
       <a href="#services">Services</a>
       <a href="#dyno">Dyno lab</a>
       <a href="#builds">Builds</a>
+      <a href="#shop">Shop &amp; book</a>
       <a href="#reviews">Reviews</a>
       <a href="#visit">Visit</a>
     </nav>
@@ -160,8 +165,8 @@
             <strong>Falix Motor Garage</strong> maps ECUs and CDIs, tunes on the dyno and builds engines for Kedah riders who want their kapcai or 150 to pull harder and run cleaner.
           </p>
           <div class="hero-cta" data-hero-fade>
-            <a class="btn btn-primary magnetic" data-link="whatsapp" href="https://wa.me/60175832262" target="_blank" rel="noopener">
-              Book on WhatsApp <svg class="icon icon-arrow"><use href="#i-arrow"/></svg>
+            <a class="btn btn-primary magnetic" href="#book">
+              Book a dyno session <svg class="icon icon-arrow"><use href="#i-arrow"/></svg>
             </a>
             <a class="btn btn-ghost magnetic" href="#dyno">See the dyno</a>
           </div>
@@ -405,8 +410,66 @@
       </div>
     </section>
 
+    <!-- ============ SHOP & BOOKING (payment links, see data.js) ============ -->
+    <section class="sec" id="shop" data-scene="shop" data-gear="5" aria-labelledby="shop-title">
+      <div class="wrap">
+        <div class="sec-head">
+          <h2 class="h-display" id="shop-title" data-reveal>Book.<br>Pay. <em>Ride.</em></h2>
+          <div>
+            <p class="lede" data-fade-up>Hold a dyno slot with a deposit, or grab parts that are on the shelf today. Pay online, then pick up at the shop in Sungai Petani.</p>
+            <p class="shop-note" data-shop-note hidden></p>
+          </div>
+        </div>
+
+        <div class="booking card" id="book" data-fade-up>
+          <div class="book-info">
+            <h3 class="book-title">Book a dyno session</h3>
+            <p class="book-lede">Baseline run, tune and a before-and-after sheet you can keep.</p>
+            <div class="deposit"><b data-deposit-amount>RM 50</b><span data-deposit-note>Deducted from your final bill</span></div>
+            <ol class="book-steps" data-book-steps>
+              <li><span>1</span>Pick your bike, day and slot</li>
+              <li><span>2</span>Pay the deposit online</li>
+              <li><span>3</span>Confirm on WhatsApp — the crew locks it in</li>
+            </ol>
+          </div>
+
+          <form class="book-form" data-book-form novalidate>
+            <fieldset>
+              <legend class="mono">Bike</legend>
+              <div class="pick" data-pick="bike"></div>
+            </fieldset>
+            <fieldset>
+              <legend class="mono">Day <span class="legend-note">· closed Fridays</span></legend>
+              <div class="days" data-pick="day"></div>
+            </fieldset>
+            <fieldset>
+              <legend class="mono">Slot</legend>
+              <div class="pick" data-pick="slot"></div>
+            </fieldset>
+            <label class="field">
+              <span class="mono">Current mods <span class="legend-note">· optional</span></span>
+              <input type="text" name="mods" maxlength="120" autocomplete="off" placeholder="e.g. 62 mm bore-up, free-flow pipe">
+            </label>
+            <div class="book-summary" aria-live="polite">
+              <span data-book-summary>Pick your bike to continue</span>
+              <span class="mono" data-book-ref></span>
+            </div>
+            <div class="book-actions">
+              <a class="btn btn-primary" data-book-pay href="#" target="_blank" rel="noopener"><svg class="icon"><use href="#i-lock"/></svg> <span>Pay deposit</span></a>
+              <a class="btn btn-ghost" data-book-wa href="#" target="_blank" rel="noopener"><svg class="icon"><use href="#i-chat"/></svg> <span>Confirm on WhatsApp</span></a>
+            </div>
+            <p class="fine">Your slot is held once the crew confirms it on WhatsApp. <a href="policies.html#deposits">Deposit terms</a></p>
+          </form>
+        </div>
+
+        <div class="products" data-products></div>
+
+        <p class="shop-legal fine"><svg class="icon"><use href="#i-lock"/></svg> Payments run on the payment provider's secure page, so FMG never sees your card or bank login. <a href="policies.html">Orders, deposits &amp; refunds</a></p>
+      </div>
+    </section>
+
     <!-- ============ REVIEWS ============ -->
-    <section class="sec" id="reviews" data-scene="flow" data-gear="5" aria-labelledby="reviews-title">
+    <section class="sec" id="reviews" data-scene="flow" data-gear="6" aria-labelledby="reviews-title">
       <div class="wrap proof-grid">
         <aside class="proof-score">
           <h2 class="sr-only" id="reviews-title">Reviews</h2>
@@ -467,7 +530,7 @@
     </section>
 
     <!-- ============ VISIT ============ -->
-    <section class="sec" id="visit" data-scene="contour" data-gear="6" aria-labelledby="visit-title">
+    <section class="sec" id="visit" data-scene="contour" data-gear="N" aria-labelledby="visit-title">
       <div class="wrap">
         <div class="visit-grid">
           <div class="visit-info">
@@ -533,10 +596,19 @@
         <a data-link="instagram" href="#" target="_blank" rel="noopener">Instagram</a>
         <a data-link="facebook" href="#" target="_blank" rel="noopener">Facebook</a>
         <a data-link="shopee" href="#" target="_blank" rel="noopener">Shopee</a>
+        <a href="policies.html">Policies</a>
       </div>
       <button class="to-top" type="button" data-to-top><svg class="icon"><use href="#i-up"/></svg> Back to top</button>
     </div>
   </footer>
+
+  <!-- Shown when a customer returns from the payment page (gateway redirect URL …/#paid) -->
+  <div class="toast" data-toast role="status" aria-live="polite" hidden>
+    <button class="toast-x" type="button" data-toast-close aria-label="Dismiss"><svg class="icon"><use href="#i-x"/></svg></button>
+    <p class="toast-title" data-toast-title>Payment done — thank you!</p>
+    <p class="toast-body" data-toast-body></p>
+    <a class="btn btn-primary" data-toast-wa href="#" target="_blank" rel="noopener"><svg class="icon"><use href="#i-chat"/></svg> Send on WhatsApp</a>
+  </div>
 
   <!-- Libraries (pinned) -->
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
