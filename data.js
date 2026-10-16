@@ -135,6 +135,7 @@ window.FMG = {
      price set on the payment link, so keep the two the same.
      ------------------------------------------------------------------------ */
   shop: {
+    showProducts: false,    // false = hide the parts grid (dyno booking stays). Set to true once the real ready-stock list and prices are in.
     pricesConfirmed: false, // set to true once FMG has confirmed every price below (hides the "sample" labels)
     refParam: "",           // Stripe Payment Links: "client_reference_id" (adds the booking ref to the payment). Others: ""
 

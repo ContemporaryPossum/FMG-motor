@@ -36,6 +36,8 @@ Libraries load from jsDelivr, pinned to exact versions: GSAP 3.13.0 (with Scroll
 
 The "Book. Pay. Ride." section takes payments through **payment links**: hosted checkout pages from the payment gateway. No cart, server or database is needed, so the site stays flat on Cloudflare Pages.
 
+**Parts grid on/off.** `shop.showProducts` in `data.js` is `false` for now, so only the dyno booking shows. The menu link reads "Book" and the section text talks about booking only. Set it to `true` once FMG's real ready-stock list and prices are in `shop.products`.
+
 **Works before the gateway is ready.** While a `payLink` is empty, its button sends the order or booking on WhatsApp instead, and a note on the page says online payment is coming soon.
 
 ### Going live
@@ -80,7 +82,7 @@ Almost everything a client asks to change lives in `data.js`:
 
 ## Confirm with the client before launch
 
-- **Shop items and prices are placeholders.** The four products (Redleo ECU, Motul 7100, racing radiator, ESR rims), their prices, fitments, stock status and the RM 50 dyno deposit were chosen from what FMG posts about. Swap in their real ready-stock list. Photos can go in the root folder and be referenced as `image: "file.jpg"`.
+- **Shop items and prices are placeholders** (hidden while `showProducts` is `false`). The four products (Redleo ECU, Motul 7100, racing radiator, ESR rims), their prices, fitments, stock status and the RM 50 dyno deposit were chosen from what FMG posts about. Swap in their real ready-stock list. Photos can go in the root folder and be referenced as `image: "file.jpg"`.
 - **Policies:** `policies.html` is a sensible draft. FMG must confirm the deposit cancellation window (24 h), return period (7 days), refund timing (14 business days) and delivery terms.
 - **Booking slots:** the Morning and Afternoon slot times are assumptions. Edit `shop.deposit.slots`.
 

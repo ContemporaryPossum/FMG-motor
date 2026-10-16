@@ -187,21 +187,36 @@
     };
   })();
 
+  var PARTS = !!SHOP && SHOP.showProducts !== false;
+
+  /* Booking-only mode (shop.showProducts: false): reword the section and menu */
+  safe("shop-mode", function () {
+    if (!SHOP || PARTS) return;
+    var lede = $("#shop .sec-head .lede");
+    if (lede) lede.textContent = "Hold a dyno slot with a deposit. Pick your bike, day and slot, and the crew confirms it on WhatsApp.";
+    $$('a[href="#shop"]').forEach(function (a) { a.textContent = a.closest(".mobile-menu") ? "Book a session" : "Book"; });
+  });
+
   safe("shop-note", function () {
     var note = $("[data-shop-note]");
     if (!note || !SHOP) return;
-    var anyLink = !!SHOP.deposit.payLink || SHOP.products.some(function (p) {
+    var anyLink = !!SHOP.deposit.payLink || (PARTS && SHOP.products.some(function (p) {
       return p.payLink || (p.options || []).some(function (o) { return o.payLink; });
-    });
+    }));
     var bits = [];
-    if (!anyLink) bits.push("Online payment is coming soon. Until then, buttons send your order or booking on WhatsApp.");
-    if (!SHOP.pricesConfirmed) bits.push("Prices shown are samples; the crew confirms the final price.");
+    if (!anyLink) bits.push(PARTS
+      ? "Online payment is coming soon. Until then, buttons send your order or booking on WhatsApp."
+      : "Online payment is coming soon. Until then, the booking button sends your request on WhatsApp.");
+    if (!SHOP.pricesConfirmed) bits.push(PARTS
+      ? "Prices shown are samples; the crew confirms the final price."
+      : "The deposit amount is a sample; the crew confirms it.");
     if (bits.length) { note.textContent = bits.join(" "); note.hidden = false; }
   });
 
   safe("products", function () {
     var box = $("[data-products]");
     if (!box || !SHOP) return;
+    if (!PARTS) { box.parentNode.removeChild(box); return; }
     SHOP.products.forEach(function (p) {
       var opts = p.options && p.options.length ? p.options : null;
       var el = document.createElement("article");
